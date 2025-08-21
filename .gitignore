@@ -1,4 +1,62 @@
-# Byte-compiled / optimized / DLL files
+# =========================
+# ROS 2 / colcon (모든 깊이)
+# =========================
+/build/
+/install/
+/log/
+**/build/
+**/install/
+**/log/
+.colcon/               # 일부 플러그인/툴이 만드는 숨김 폴더
+
+# rosbag2 (기록 파일은 용량 큼. 필요시 주석 처리하고 커밋)
+rosbag2_*/
+*.db3
+*.mcap
+*.bag
+*.bag.active
+*.db3-journal
+
+# launch 캐시·컴파일 바이너리 등은 위의 build/log로 대부분 커버
+
+# =========================
+# Gazebo / Ignition / GZ (선택)
+# repo 안에 시뮬 로그/덤프를 모아둘 경우만 유효
+# =========================
+**/gz-logs/
+**/ign-logs/
+**/gazebo-logs/
+**/*.state
+**/*.world.tmp
+**/*.log
+
+# =========================
+# RViz / MoveIt (선택)
+# 보통 캐시는 홈 디렉터리에 있어서 repo 밖에 생깁니다.
+# repo에 실험 로그를 저장한다면 아래를 사용
+# =========================
+**/rviz-logs/
+**/moveit-logs/
+**/benchmark_*         # MoveIt benchmark 결과를 폴더에 떨굴 때
+
+# =========================
+# C/C++ 빌드 산출물(혼재 프로젝트 대비)
+# =========================
+*.o
+*.so
+*.a
+CMakeCache.txt
+CMakeFiles/
+cmake-build-*/
+compile_commands.json
+
+# =========================
+# 편집기/OS 잡파일
+# =========================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
 *$py.class
@@ -6,6 +64,15 @@ __pycache__/
 # C extensions
 *.so
 
+# ROS2
+build/
+install/
+log/
+.colcon/
+*.log
+*.rviz
+*.launch.pyc
+ 
 # Distribution / packaging
 .Python
 build/
