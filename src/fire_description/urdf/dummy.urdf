@@ -1,0 +1,268 @@
+<?xml version="1.0"?>
+<robot name="fire_robot">
+
+  <!-- ========== base_link (루트) ========== -->
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="6.0"/>
+      <inertia ixx="0.02" ixy="0" ixz="0" iyy="0.02" iyz="0" izz="0.02"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://fire_description/meshes/fire_robot/base_link_Body1.obj" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://fire_description/meshes/fire_robot/base_link_Body1.obj" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ========== ARM ========== -->
+  <joint name="arm_RevoluteJoint" type="revolute">
+    <origin xyz="0.2765 0 0" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="arm"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-0.5" upper="0.5" effort="50" velocity="1.0"/>
+    <dynamics damping="0.05" friction="0.0"/>
+  </joint>
+
+  <link name="arm">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.4"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
+    </inertial>
+    <visual>
+      <!-- arm 메시가 절대 x=+0.2765였으므로 역오프셋 -->
+      <origin xyz="-0.2765 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://fire_description/meshes/fire_robot/arm_Body1.obj" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.2765 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://fire_description/meshes/fire_robot/arm_Body1.obj" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ========== BLADE ========== -->
+  <joint name="blade_RevoluteJoint" type="continuous">
+    <!-- arm 기준: 0.5165 - 0.2765 = 0.2400 -->
+    <origin xyz="0.2400 0 0" rpy="0 0 0"/>
+    <parent link="arm"/>
+    <child link="blade"/>
+    <axis xyz="0 1 0"/>
+    <dynamics damping="0.05" friction="0.0"/>
+  </joint>
+
+  <link name="blade">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="2.7"/>
+      <inertia ixx="0.005" ixy="0" ixz="0" iyy="0.005" iyz="0" izz="0.005"/>
+    </inertial>
+    <visual>
+      <!-- blade 메시 절대 x=+0.5165 → 역오프셋 -->
+      <origin xyz="-0.5165 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://fire_description/meshes/fire_robot/blade_Body1.obj" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.5165 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://fire_description/meshes/fire_robot/blade_Body1.obj" scale="0.001 0.001 0.001"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- ========== LEFT WHEELS (parent=base_link) ========== -->
+  <joint name="left_wheel1_RevoluteJoint" type="continuous">
+    <origin xyz="-0.2935 -0.15743 0" rpy="0 0 0"/>
+    <parent link="base_link"/><child link="left_wheel1"/>
+    <axis xyz="0 1 0"/><dynamics damping="0.05" friction="0.0"/>
+    <limit effort="30" velocity="0.26"/>
+  </joint>
+  <link name="left_wheel1">
+    <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
+    <visual>
+      <!-- 메시 절대 (-0.2935, -0.15743, 0) → 역오프셋 (+0.2935, +0.15743, 0) -->
+      <origin xyz="0.2935 0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://fire_description/meshes/fire_robot/left_wheel1_Body1.obj" scale="0.001 0.001 0.001"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.2935 0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://fire_description/meshes/fire_robot/left_wheel1_Body1.obj" scale="0.001 0.001 0.001"/></geometry>
+    </collision>
+  </link>
+
+  <joint name="left_wheel2_RevoluteJoint" type="continuous">
+    <origin xyz="0.025 -0.15743 0" rpy="0 0 0"/>
+    <parent link="base_link"/><child link="left_wheel2"/>
+    <axis xyz="0 1 0"/><dynamics damping="0.05" friction="0.0"/>
+    <limit effort="30" velocity="0.26"/>
+  </joint>
+  <link name="left_wheel2">
+    <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
+    <visual>
+      <!-- 절대 (0.025, -0.15743, 0) → 역오프셋 (-0.025, +0.15743, 0) -->
+      <origin xyz="-0.025 0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://fire_description/meshes/fire_robot/left_wheel2_Body1.obj" scale="0.001 0.001 0.001"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.025 0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://fire_description/meshes/fire_robot/left_wheel2_Body1.obj" scale="0.001 0.001 0.001"/></geometry>
+    </collision>
+  </link>
+
+  <joint name="left_wheel3_RevoluteJoint" type="continuous">
+    <origin xyz="0.3455 -0.15743 0" rpy="0 0 0"/>
+    <parent link="base_link"/><child link="left_wheel3"/>
+    <axis xyz="0 1 0"/><dynamics damping="0.05" friction="0.0"/>
+    <limit effort="30" velocity="0.26"/>
+  </joint>
+  <link name="left_wheel3">
+    <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
+    <visual>
+      <!-- 절대 (0.3455, -0.15743, 0) → 역오프셋 (-0.3455, +0.15743, 0) -->
+      <origin xyz="-0.3455 0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://fire_description/meshes/fire_robot/left_wheel3_Body1.obj" scale="0.001 0.001 0.001"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.3455 0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://fire_description/meshes/fire_robot/left_wheel3_Body1.obj" scale="0.001 0.001 0.001"/></geometry>
+    </collision>
+  </link>
+
+  <!-- ========== RIGHT WHEELS ========== -->
+  <joint name="right_wheel1_RevoluteJoint" type="continuous">
+    <origin xyz="-0.2935 0.15743 0" rpy="0 0 0"/>
+    <parent link="base_link"/><child link="right_wheel1"/>
+    <axis xyz="0 1 0"/><dynamics damping="0.05" friction="0.0"/>
+    <limit effort="30" velocity="0.26"/>
+  </joint>
+  <link name="right_wheel1">
+    <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
+    <visual>
+      <!-- 절대 (-0.2935, +0.15743, 0) → 역오프셋 (+0.2935, -0.15743, 0) -->
+      <origin xyz="0.2935 -0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://fire_description/meshes/fire_robot/right_wheel1_Body1.obj" scale="0.001 0.001 0.001"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.2935 -0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://fire_description/meshes/fire_robot/right_wheel1_Body1.obj" scale="0.001 0.001 0.001"/></geometry>
+    </collision>
+  </link>
+
+  <joint name="right_wheel2_RevoluteJoint" type="continuous">
+    <origin xyz="0.025 0.15743 0" rpy="0 0 0"/>
+    <parent link="base_link"/><child link="right_wheel2"/>
+    <axis xyz="0 1 0"/><dynamics damping="0.05" friction="0.0"/>
+    <limit effort="30" velocity="0.26"/>
+  </joint>
+  <link name="right_wheel2">
+    <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
+    <visual>
+      <!-- 절대 (0.025, +0.15743, 0) → 역오프셋 (-0.025, -0.15743, 0) -->
+      <origin xyz="-0.025 -0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://fire_description/meshes/fire_robot/right_wheel2_Body1.obj" scale="0.001 0.001 0.001"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.025 -0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://fire_description/meshes/fire_robot/right_wheel2_Body1.obj" scale="0.001 0.001 0.001"/></geometry>
+    </collision>
+  </link>
+
+  <joint name="right_wheel3_RevoluteJoint" type="continuous">
+    <origin xyz="0.3455 0.15743 0" rpy="0 0 0"/>
+    <parent link="base_link"/><child link="right_wheel3"/>
+    <axis xyz="0 1 0"/><dynamics damping="0.05" friction="0.0"/>
+    <limit effort="30" velocity="0.26"/>
+  </joint>
+  <link name="right_wheel3">
+    <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
+    <visual>
+      <!-- 절대 (0.3455, +0.15743, 0) → 역오프셋 (-0.3455, -0.15743, 0) -->
+      <origin xyz="-0.3455 -0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://fire_description/meshes/fire_robot/right_wheel3_Body1.obj" scale="0.001 0.001 0.001"/></geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.3455 -0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="package://fire_description/meshes/fire_robot/right_wheel3_Body1.obj" scale="0.001 0.001 0.001"/></geometry>
+    </collision>
+  </link>
+<!-- Gazebo에서 ros2_control 사용 -->
+<gazebo>
+  <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+    <!-- 아래 YAML 경로는 네 패키지에 맞게 수정 -->
+    <parameters>package://fire_description/config/ros2_control.yaml</parameters>
+  </plugin>
+</gazebo>
+
+<!-- ros2_control 인터페이스 선언 -->
+<ros2_control name="GazeboSystem" type="system">
+  <hardware>
+    <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+  </hardware>
+
+  <!-- 바퀴는 속도 제어 -->
+  <joint name="left_wheel1_RevoluteJoint">
+    <command_interfaces>velocity</command_interfaces>
+    <state_interfaces>position,velocity</state_interfaces>
+  </joint>
+  <joint name="left_wheel2_RevoluteJoint">
+    <command_interfaces>velocity</command_interfaces>
+    <state_interfaces>position,velocity</state_interfaces>
+  </joint>
+  <joint name="left_wheel3_RevoluteJoint">
+    <command_interfaces>velocity</command_interfaces>
+    <state_interfaces>position,velocity</state_interfaces>
+  </joint>
+  <joint name="right_wheel1_RevoluteJoint">
+    <command_interfaces>velocity</command_interfaces>
+    <state_interfaces>position,velocity</state_interfaces>
+  </joint>
+  <joint name="right_wheel2_RevoluteJoint">
+    <command_interfaces>velocity</command_interfaces>
+    <state_interfaces>position,velocity</state_interfaces>
+  </joint>
+  <joint name="right_wheel3_RevoluteJoint">
+    <command_interfaces>velocity</command_interfaces>
+    <state_interfaces>position,velocity</state_interfaces>
+  </joint>
+
+  <!-- 암/블레이드는 위치 제어 (원하면 effort/velocity로 바꿔도 됨) -->
+  <joint name="arm_RevoluteJoint">
+    <command_interfaces>position</command_interfaces>
+    <state_interfaces>position,velocity</state_interfaces>
+  </joint>
+  <joint name="blade_RevoluteJoint">
+    <command_interfaces>position</command_interfaces>
+    <state_interfaces>position,velocity</state_interfaces>
+  </joint>
+</ros2_control>
+
+
+  <!-- ========= Gazebo 접촉 파라미터 : 안정화 ========= -->
+  <gazebo reference="left_wheel1"><mu1>1.0</mu1><mu2>1.0</mu2><kp>1e5</kp><kd>1.0</kd></gazebo>
+  <gazebo reference="left_wheel2"><mu1>1.0</mu1><mu2>1.0</mu2><kp>1e5</kp><kd>1.0</kd></gazebo>
+  <gazebo reference="left_wheel3"><mu1>1.0</mu1><mu2>1.0</mu2><kp>1e5</kp><kd>1.0</kd></gazebo>
+  <gazebo reference="right_wheel1"><mu1>1.0</mu1><mu2>1.0</mu2><kp>1e5</kp><kd>1.0</kd></gazebo>
+  <gazebo reference="right_wheel2"><mu1>1.0</mu1><mu2>1.0</mu2><kp>1e5</kp><kd>1.0</kd></gazebo>
+  <gazebo reference="right_wheel3"><mu1>1.0</mu1><mu2>1.0</mu2><kp>1e5</kp><kd>1.0</kd></gazebo>
+
+</robot>
