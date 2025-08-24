@@ -71,11 +71,15 @@ def launch_setup(context, *args, **kwargs):
     clock_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        arguments=['/clock@rosgraph_msgs/msg/Clock@gz.msgs.Clock'],
+        arguments=[
+            '/clock@rosgraph_msgs/msg/Clock@gz.msgs.Clock',
+            '/imu@sensor_msgs/msg/Imu@gz.msgs.IMU',
+            '/mag@sensor_msgs/msg/MagneticField@gz.msgs.Magnetometer'
+        ],
         output='screen'
     )
 
-    # 7) RViz (옵션)
+    # 7) RViz 
     
     rviz = Node(
         package='rviz2',
@@ -86,7 +90,7 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # 반환: 액션 리스트
-    actions = [gz, rsp, jsp, spawn, clock_bridge, rviz]
+    actions = [gz, rsp, spawn, clock_bridge, rviz]
     return actions
 
 def generate_launch_description():
