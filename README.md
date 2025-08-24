@@ -1,5 +1,6 @@
 # wildfire-ugv
 
+Gazebo sim, RViz2, ros2_control 사용 
 사용방법
 1. 워크스페이스 소스
 2. ros2 launch fire_bringup gz_spawn.launch.py # Gazebo sim 및 RViz2 환경 실행
