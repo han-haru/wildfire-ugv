@@ -42,17 +42,30 @@ def generate_launch_description():
         output='screen'
     )])
 
-    # ★ 중요: diff_drive는 타입까지 강제
+    #velocity_controllers/JointGroupVelocityController
+    #★ 중요: diff_drive는 타입까지 강제
+    # diff = TimerAction(period=1.5, actions=[Node(
+    #     package='controller_manager',
+    #     executable='spawner',
+    #     arguments=[
+    #         'diff_drive_controller',
+    #         #'--controller-type', 'diff_drive_controller/DiffDriveController',
+    #         '--param-file', ros2_control_params,
+    #     ] + cm_arg + cm_timeout,
+    #     output='screen'
+    # )])
+
     diff = TimerAction(period=1.5, actions=[Node(
         package='controller_manager',
         executable='spawner',
         arguments=[
-            'diff_drive_controller',
-            '--controller-type', 'diff_drive_controller/DiffDriveController',
+            'wheel_test_controller',
+            #'--controller-type', 'diff_drive_controller/DiffDriveController',
             '--param-file', ros2_control_params,
         ] + cm_arg + cm_timeout,
         output='screen'
     )])
+
 
     return LaunchDescription([jsb, arm, blade, diff])
 

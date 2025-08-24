@@ -48,13 +48,13 @@
       <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="-0.2765 0 0"/>
       <geometry>
         <mesh filename="package://fire_description/meshes/arm_Body1.obj" scale="0.001 0.001 0.001"/>
       </geometry>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="-0.2765 0 0"/>
       <geometry>
         <mesh filename="package://fire_description/meshes/arm_Body1.obj" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -62,7 +62,7 @@
   </link>
   <!-- ========== BLADE ========== -->
   <joint name="blade_joint" type="continuous">
-    <origin rpy="0 0 0" xyz="0. 0 0"/>
+    <origin rpy="0 0 0" xyz="0.240 0 0"/>
     <parent link="arm"/>
     <child link="blade"/>
     <axis xyz="0 1 0"/>
@@ -76,13 +76,13 @@
       <inertia ixx="0.005" ixy="0" ixz="0" iyy="0.005" iyz="0" izz="0.005"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="-0.240 0 0"/>
       <geometry>
         <mesh filename="package://fire_description/meshes/blade_Body1.obj" scale="0.001 0.001 0.001"/>
       </geometry>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin rpy="0 0 0" xyz="-0.240 0 0"/>
       <geometry>
         <mesh filename="package://fire_description/meshes/blade_Body1.obj" scale="0.001 0.001 0.001"/>
       </geometry>

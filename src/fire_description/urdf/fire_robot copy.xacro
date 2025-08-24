@@ -4,8 +4,9 @@
 <!--##############################################################-->
 <!--#################### XACRO 상수 ####################-->
   <xacro:arg name="include_inertial" default="true"/>
+  <xacro:arg name="mesh_scale" default="1 1 1"/>
   <xacro:property name="mesh_dir"   value="$(find fire_description)/meshes"/>
-
+  <xacro:property name="scale_3d"   value="$(arg mesh_scale)"/>
 <!--##############################################################-->
 <!--#################### Robot Links & Joints ####################-->
 <!--##############################################################-->
@@ -17,7 +18,7 @@
   <joint name="base_footprint_joint" type="fixed">
     <parent link="base_footprint"/>
     <child link="base_link"/>
-    <origin xyz="0 0 0.3" rpy="0 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
   </joint>
 
 <!--##############################################################-->
@@ -31,13 +32,13 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://${mesh_dir}/base_link.obj" scale="0.01 0.01 0.01"/>
+        <mesh filename="file://${mesh_dir}/base_link_Body1.obj" scale="${scale_3d}"/>
       </geometry>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://${mesh_dir}/base_link.obj" scale="0.01 0.01 0.01"/>
+        <mesh filename="file://${mesh_dir}/base_link_Body1.stl" scale="${scale_3d}"/>
       </geometry>
     </collision>
   </link>
@@ -49,7 +50,7 @@
     <parent link="base_link"/>
     <child link="imu_link"/>
     <!-- 로봇 기준에서 IMU 위치/자세 조정 -->
-    <origin xyz="-0.10 0.0 0.0" rpy="0 0 0"/>
+    <origin xyz="0.0 0.0 -0.10" rpy="0 0 0"/>
   </joint>
 
   <!-- ===== Gazebo Sim sensors on imu_link ===== -->
@@ -103,15 +104,15 @@
       <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
     </inertial>
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="-0.2765 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://${mesh_dir}/arm.obj" scale="0.01 0.01 0.01"/>
+        <mesh filename="file://${mesh_dir}/arm_Body1.obj" scale="${scale_3d}"/>
       </geometry>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="-0.2765 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://${mesh_dir}/arm.obj" scale="0.01 0.01 0.01"/>
+        <mesh filename="file://${mesh_dir}/arm_Body1.stl" scale="${scale_3d}"/>
       </geometry>
     </collision>
   </link>
@@ -134,176 +135,134 @@
       <inertia ixx="0.005" ixy="0" ixz="0" iyy="0.005" iyz="0" izz="0.005"/>
     </inertial>
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="-0.51650 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://${mesh_dir}/blade.obj" scale="0.01 0.01 0.01"/>
+        <mesh filename="file://${mesh_dir}/blade_Body1.obj" scale="${scale_3d}"/>
       </geometry>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="-0.51650 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="file://${mesh_dir}/blade.obj" scale="0.01 0.01 0.01"/>
+        <mesh filename="file://${mesh_dir}/blade_Body1.stl" scale="${scale_3d}"/>
       </geometry>
     </collision>
   </link>
 
-  <!--##############################################################-->
   <!-- ========== LEFT WHEELS (parent=base_link) ========== -->
   <joint name="left_wheel_1_joint" type="continuous">
     <origin xyz="-0.2935 -0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="left_wheel1"/>
     <axis xyz="0 1 0"/><dynamics damping="0.05" friction="0.0"/>
-    <limit velocity="20.0" effort="50.0"/>
+    <limit velocity="0.26" effort="50.0"/>
   </joint>
   <link name="left_wheel1">
     <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
       <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><mesh filename="file://${mesh_dir}/left_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
+      <origin xyz="0.2935 0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="file://${mesh_dir}/left_wheel1_Body1.obj" scale="${scale_3d}"/></geometry>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><mesh filename="file://${mesh_dir}/left_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
+      <origin xyz="0.2935 0.14 0" rpy="0 0 0"/>
+      <geometry><mesh filename="file://${mesh_dir}/left_wheel1_Body1.stl" scale="${scale_3d}"/></geometry>
     </collision>
   </link>
-  <gazebo reference="left_wheel1">
-    <mu1>1.0</mu1>   <!-- 표면 마찰 계수 -->
-    <mu2>1.0</mu2>
-    <kp>1e5</kp>     <!-- 접촉 강성 -->
-    <kd>1.0</kd>     <!-- 접촉 감쇠 -->
-  </gazebo>
 
-<!--##############################################################-->
   <joint name="left_wheel_2_joint" type="continuous">
     <origin xyz="0.025 -0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="left_wheel2"/>
     <axis xyz="0 1 0"/><dynamics damping="0.05" friction="0.0"/>
-    <limit velocity="20.0" effort="50.0"/>
+    <limit velocity="0.26" effort="50.0"/>
   </joint>
   <link name="left_wheel2">
     <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
       <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><mesh filename="file://${mesh_dir}/left_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
+      <origin xyz="-0.025 0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="file://${mesh_dir}/left_wheel2_Body1.obj" scale="${scale_3d}"/></geometry>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><mesh filename="file://${mesh_dir}/left_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
+      <origin xyz="0.2935 0.14 0" rpy="0 0 0"/>
+      <geometry><mesh filename="file://${mesh_dir}/left_wheel2_Body1.stl" scale="${scale_3d}"/></geometry>
     </collision>
   </link>
-  <gazebo reference="left_wheel2">
-    <mu1>1.0</mu1>   <!-- 표면 마찰 계수 -->
-    <mu2>1.0</mu2>
-    <kp>1e5</kp>     <!-- 접촉 강성 -->
-    <kd>1.0</kd>     <!-- 접촉 감쇠 -->
-  </gazebo>
 
-<!--##############################################################-->
   <joint name="left_wheel_3_joint" type="continuous">
     <origin xyz="0.3455 -0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="left_wheel3"/>
     <axis xyz="0 1 0"/><dynamics damping="0.05" friction="0.0"/>
-    <limit velocity="20.0" effort="50.0"/>
+    <limit velocity="0.26" effort="50.0"/>
   </joint>
   <link name="left_wheel3">
     <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
       <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><mesh filename="file://${mesh_dir}/left_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
+      <origin xyz="-0.3455 0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="file://${mesh_dir}/left_wheel3_Body1.obj" scale="${scale_3d}"/></geometry>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><mesh filename="file://${mesh_dir}/left_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
+      <origin xyz="0.2935 0.14 0" rpy="0 0 0"/>
+      <geometry><mesh filename="file://${mesh_dir}/left_wheel3_Body1.stl" scale="${scale_3d}"/></geometry>
     </collision>
   </link>
-  <gazebo reference="left_wheel3">
-    <mu1>1.0</mu1>   <!-- 표면 마찰 계수 -->
-    <mu2>1.0</mu2>
-    <kp>1e5</kp>     <!-- 접촉 강성 -->
-    <kd>1.0</kd>     <!-- 접촉 감쇠 -->
-  </gazebo>
 
-<!--##############################################################-->
   <!-- ========== RIGHT WHEELS ========== -->
   <joint name="right_wheel_1_joint" type="continuous">
     <origin xyz="-0.2935 0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="right_wheel1"/>
     <axis xyz="0 1 0"/><dynamics damping="0.05" friction="0.0"/>
-    <limit velocity="20.0" effort="50.0"/>
+    <limit velocity="0.26" effort="50.0"/>
   </joint>
   <link name="right_wheel1">
     <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
       <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><mesh filename="file://${mesh_dir}/right_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
+      <origin xyz="0.2935 -0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="file://${mesh_dir}/right_wheel1_Body1.obj" scale="${scale_3d}"/></geometry>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><mesh filename="file://${mesh_dir}/right_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
+      <origin xyz="0.2935 0.28743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="file://${mesh_dir}/right_wheel1_Body1.stl" scale="${scale_3d}"/></geometry>
     </collision>
   </link>
-  <gazebo reference="right_wheel1">
-    <mu1>1.0</mu1>   <!-- 표면 마찰 계수 -->
-    <mu2>1.0</mu2>
-    <kp>1e5</kp>     <!-- 접촉 강성 -->
-    <kd>1.0</kd>     <!-- 접촉 감쇠 -->
-  </gazebo>
 
-<!--##############################################################-->
   <joint name="right_wheel_2_joint" type="continuous">
     <origin xyz="0.025 0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="right_wheel2"/>
     <axis xyz="0 1 0"/><dynamics damping="0.05" friction="0.0"/>
-    <limit velocity="20.0" effort="50.0"/>
+    <limit velocity="0.26" effort="50.0"/>
   </joint>
   <link name="right_wheel2">
     <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
       <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><mesh filename="file://${mesh_dir}/right_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
+      <origin xyz="-0.025 -0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="file://${mesh_dir}/right_wheel2_Body1.obj" scale="${scale_3d}"/></geometry>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><mesh filename="file://${mesh_dir}/right_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
+      <origin xyz="0.2935 0.28743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="file://${mesh_dir}/right_wheel2_Body1.stl" scale="${scale_3d}"/></geometry>
     </collision>
   </link>
-  <gazebo reference="right_wheel2">
-    <mu1>1.0</mu1>   <!-- 표면 마찰 계수 -->
-    <mu2>1.0</mu2>
-    <kp>1e5</kp>     <!-- 접촉 강성 -->
-    <kd>1.0</kd>     <!-- 접촉 감쇠 -->
-  </gazebo>
 
-<!--##############################################################-->
   <joint name="right_wheel_3_joint" type="continuous">
     <origin xyz="0.3455 0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="right_wheel3"/>
     <axis xyz="0 1 0"/><dynamics damping="0.05" friction="0.0"/>
-    <limit velocity="20.0" effort="50.0"/>
+    <limit velocity="0.26" effort="50.0"/>
   </joint>
   <link name="right_wheel3">
     <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
       <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><mesh filename="file://${mesh_dir}/right_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
+      <origin xyz="-0.3455 -0.15743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="file://${mesh_dir}/right_wheel3_Body1.obj" scale="${scale_3d}"/></geometry>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry><mesh filename="file://${mesh_dir}/right_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
+      <origin xyz="0.2935 0.28743 0" rpy="0 0 0"/>
+      <geometry><mesh filename="file://${mesh_dir}/right_wheel3_Body1.stl" scale="${scale_3d}"/></geometry>
     </collision>
   </link>
-  <gazebo reference="right_wheel3">
-    <mu1>1.0</mu1>   <!-- 표면 마찰 계수 -->
-    <mu2>1.0</mu2>
-    <kp>1e5</kp>     <!-- 접촉 강성 -->
-    <kd>1.0</kd>     <!-- 접촉 감쇠 -->
-  </gazebo>
 
   <!-- ===== ros2_control: Gazebo Sim 하드웨어 플러그인 ===== -->
   <ros2_control name="RobotController" type="system">
