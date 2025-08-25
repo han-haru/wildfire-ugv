@@ -42,7 +42,6 @@ def generate_launch_description():
         output='screen'
     )])
 
-
     diff = TimerAction(period=1.5, actions=[Node(
         package='controller_manager',
         executable='spawner',
@@ -56,4 +55,3 @@ def generate_launch_description():
 
 
     return LaunchDescription([jsb, arm, blade, diff])
-

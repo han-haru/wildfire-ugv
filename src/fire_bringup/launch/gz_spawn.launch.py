@@ -25,6 +25,21 @@ def launch_setup(context, *args, **kwargs):
     urdf_doc   = xacro.process_file(xacro_file, mappings={'mesh_scale': mesh_scale})
     robot_desc = urdf_doc.toxml()
 
+    # 🔴 (A) IGN_GAZEBO_RESOURCE_PATH = 패키지 루트 (append)
+    if "IGN_GAZEBO_RESOURCE_PATH" in os.environ and os.environ["IGN_GAZEBO_RESOURCE_PATH"]:
+        os.environ["IGN_GAZEBO_RESOURCE_PATH"] += os.pathsep + bringup_pkg
+    else:
+        os.environ["IGN_GAZEBO_RESOURCE_PATH"] = bringup_pkg
+
+    # 🔴 (B) 월드 파일 경로 구성 + 존재 검사
+    world_file = os.path.join(bringup_pkg, 'worlds', 'test_route.sdf')
+    if not os.path.exists(world_file):
+        raise RuntimeError(f"[fire_bringup] World file not found: {world_file}")
+
+    # debug 로그(선택)
+    print(f"[fire_bringup] Using world: {world_file}")
+    print(f"[fire_bringup] IGN_GAZEBO_RESOURCE_PATH={os.environ.get('IGN_GAZEBO_RESOURCE_PATH','')}")
+
     # xacro 처리 후
     with open('/tmp/fire_robot.urdf', 'w') as f:
         f.write(robot_desc)
@@ -47,17 +62,17 @@ def launch_setup(context, *args, **kwargs):
 
     # 4) Gazebo Fortress 실행
     gz = ExecuteProcess(
-        cmd=['ign', 'gazebo', '-r', '-v', '3', 'empty.sdf'],
+        cmd=['ign', 'gazebo', '-r', '-v', '3', world_file],
         output='screen'
     )
 
     # 5) 스폰: -string에 **그냥 URDF 문자열**을 바로 넣기 (Command 안 씀)
     spawn = TimerAction(
-        period=1.0,
+        period=3.0,
         actions=[ExecuteProcess(
             cmd=[
                 'ros2', 'run', 'ros_gz_sim', 'create',
-                '-world', 'empty',
+                '-world', 'test_world',
                 '-name', 'fire_robot',
                 '-allow_renaming', 'true',
                 '-z', '0.2',

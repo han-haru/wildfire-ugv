@@ -1,3 +1,78 @@
+# controller_manager:
+#   ros__parameters:
+#     update_rate: 250
+
+#     joint_state_broadcaster:
+#       type: joint_state_broadcaster/JointStateBroadcaster
+
+#     # Arm: position (단일 관절이라도 Group 컨트롤러 사용)
+#     arm_position_controller:
+#       type: position_controllers/JointGroupPositionController
+#       joints: [arm_joint]
+
+#     # Blade: velocity
+#     blade_velocity_controller:
+#       type: velocity_controllers/JointGroupVelocityController
+#       joints: [blade_joint]
+
+#     # # Drive: diff drive
+#     # diff_drive_controller:
+#     #   type: diff_drive_controller/DiffDriveController
+
+# # # 주행(기존)
+# # diff_drive_controller:
+# #   ros__parameters:
+# #     left_wheel_names:  [left_wheel_1_joint, left_wheel_2_joint, left_wheel_3_joint]
+# #     right_wheel_names: [right_wheel_1_joint, right_wheel_2_joint, right_wheel_3_joint]
+
+# #     wheel_separation: 0.32
+# #     wheel_radius: 0.10
+
+# #     publish_rate:    50.0
+# #     cmd_vel_timeout: 0.5
+# #     use_stamped_vel: false
+# #     enable_odom_tf:  true
+# #     odom_frame_id:   odom
+# #     base_frame_id:   base_footprint # base_link가 있지만 base_footprint로 쓰는 게 오류 안 남.
+# #     open_loop:       true # true 면 바퀴 위치 피드백을 안 씀(속도積분)
+# #     publish_wheel_data: true
+
+# # controller.yaml에 임시 추가
+#   wheel_test_controller:
+#     type: velocity_controllers/JointGroupVelocityController
+#     joints: [
+#       left_wheel_1_joint,
+#       left_wheel_2_joint,
+#       left_wheel_3_joint,
+#       right_wheel_1_joint,
+#       right_wheel_2_joint,
+#       right_wheel_3_joint,
+#       ]
+
+# wheel_test_controller:
+#   ros__parameters:
+#     joints: [
+#       "left_wheel_1_joint",
+#       "left_wheel_2_joint",
+#       "left_wheel_3_joint",
+#       "right_wheel_1_joint",
+#       "right_wheel_2_joint",
+#       "right_wheel_3_joint",
+#       ]
+
+
+# # === 팔: position 인터페이스로 한 개 조인트 제어 ===
+# arm_position_controller:
+#   ros__parameters:
+#     joints: ["arm_joint"]
+#     interface_name: "position"      # 목표 각도(rad)
+
+# # === 블레이드: velocity 인터페이스로 한 개 조인트 제어 ===
+# blade_velocity_controller:
+#   ros__parameters:
+#     joints: ["blade_joint"]
+#     interface_name: "velocity"      # 목표 각속도(rad/s)
+
 controller_manager:
   ros__parameters:
     update_rate: 250
@@ -13,9 +88,6 @@ controller_manager:
     blade_velocity_controller:
       type: velocity_controllers/JointGroupVelocityController
 
-    # Drive: diff drive
-    diff_drive_controller:
-      type: diff_drive_controller/DiffDriveController
 
     # Wheel test: Group Velocity Controller (type만 명시)
     wheel_test_controller:
@@ -39,3 +111,35 @@ wheel_test_controller:
       "left_wheel_1_joint", "left_wheel_2_joint", "left_wheel_3_joint",
       "right_wheel_1_joint", "right_wheel_2_joint", "right_wheel_3_joint"
       ]
+
+
+# # 주행(기존)
+# diff_drive_controller:
+#   ros__parameters:
+#     left_wheel_names:  ["left_wheel_1_joint"]
+#     right_wheel_names: ["right_wheel_1_joint"]
+
+#     wheel_separation: 0.32
+#     wheel_radius: 0.10
+
+#     cmd_vel_timeout: 0.5
+#     use_stamped_vel: false
+#     enable_odom_tf:  true
+#     odom_frame_id:   odom
+#     base_frame_id:   base_footprint # base_footprint # base_link가 있지만 base_footprint로 쓰는 게 오류 안 남.
+#     open_loop:       true # true 면 바퀴 위치 피드백을 안 씀(속도積분)
+diff_drive_controller:
+  ros__parameters:
+    left_wheel_names:  ["left_wheel_1_joint","left_wheel_2_joint","left_wheel_3_joint"]
+    right_wheel_names: ["right_wheel_1_joint","right_wheel_2_joint","right_wheel_3_joint"]
+    wheel_separation: 0.32
+    wheel_radius: 0.10
+    use_stamped_vel: true
+    open_loop: true
+    enable_odom_tf: true
+    odom_frame_id: odom
+    base_frame_id: base_footprint
+    publish_rate: 50.0
+    cmd_vel_timeout: 0.5
+    publish_wheel_data: true
+  
