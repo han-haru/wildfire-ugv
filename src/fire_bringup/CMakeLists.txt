@@ -12,7 +12,7 @@ find_package(ament_cmake REQUIRED)
 # find_package(<dependency> REQUIRED)
 
 # launch / config / rviz 설치
-install(DIRECTORY launch config rviz
+install(DIRECTORY launch config rviz media worlds
   DESTINATION share/${PROJECT_NAME}
 )
 

@@ -85,6 +85,36 @@
   </gazebo>
 
 <!--##############################################################-->
+<!--####################camera view############################-->
+  <link name="cam_follow_link">
+    <inertial>
+      <mass value="0.0001"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <sphere radius="0.1"/>
+      </geometry>
+      <material><color rgba="1 0 0 1"/></material>
+    </visual>
+    <collision>
+      <geometry>
+        <sphere radius="0.1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- joint: fixed → revolute(잠금) -->
+  <joint name="cam_follow_joint" type="revolute">
+    <parent link="base_link"/>
+    <child link="cam_follow_link"/>
+    <origin xyz="0.05 0 0.3" rpy="0 0 3.1415926535"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="0.0" upper="0.0" effort="0.1" velocity="0.1"/>
+    <dynamics damping="1.0"/>
+  </joint>
+
+<!--##############################################################-->
   <!-- ========== ARM ========== -->
   <joint name="arm_joint" type="revolute">
     <origin xyz="0.2765 0 0" rpy="0 0 0"/>
@@ -149,6 +179,7 @@
 
   <!--##############################################################-->
   <!-- ========== LEFT WHEELS (parent=base_link) ========== -->
+  <!-- ==================== left_wheel1 =================== -->
   <joint name="left_wheel_1_joint" type="continuous">
     <origin xyz="-0.2935 -0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="left_wheel1"/>
@@ -175,6 +206,7 @@
   </gazebo>
 
 <!--##############################################################-->
+<!-- ==================== left_wheel2 =================== -->
   <joint name="left_wheel_2_joint" type="continuous">
     <origin xyz="0.025 -0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="left_wheel2"/>
@@ -201,6 +233,7 @@
   </gazebo>
 
 <!--##############################################################-->
+<!-- ==================== left_wheel3 =================== -->
   <joint name="left_wheel_3_joint" type="continuous">
     <origin xyz="0.3455 -0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="left_wheel3"/>
@@ -228,6 +261,7 @@
 
 <!--##############################################################-->
   <!-- ========== RIGHT WHEELS ========== -->
+  <!-- ========== right_wheel1 ========== -->
   <joint name="right_wheel_1_joint" type="continuous">
     <origin xyz="-0.2935 0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="right_wheel1"/>
@@ -254,6 +288,7 @@
   </gazebo>
 
 <!--##############################################################-->
+<!-- ========== right_wheel2 ========== -->
   <joint name="right_wheel_2_joint" type="continuous">
     <origin xyz="0.025 0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="right_wheel2"/>
@@ -280,6 +315,7 @@
   </gazebo>
 
 <!--##############################################################-->
+<!-- ========== right_wheel3 ========== -->
   <joint name="right_wheel_3_joint" type="continuous">
     <origin xyz="0.3455 0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="right_wheel3"/>

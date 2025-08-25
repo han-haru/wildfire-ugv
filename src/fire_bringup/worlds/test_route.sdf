@@ -1,0 +1,101 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+  <world name="test_world">
+
+    <!-- 중력 / 물리 설정(옵션) -->
+    <gravity>0 0 -9.81</gravity>
+    <atmosphere type="adiabatic"/>
+    <scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.8 1</background>
+    </scene>
+
+    <!-- Sun: Fuel 모델 대신 직접 정의 -->
+    <light name="sun" type="directional">
+      <pose>0 0 100 0 0 0</pose>
+      <cast_shadows>true</cast_shadows>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>-0.5 0.2 -1</direction>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+    </light>
+
+    <!-- Ground plane: Fuel 모델 대신 로컬 평면 -->
+    <model name="ground_plane_local">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>200 200</size>
+            </plane>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>1.0</mu>
+                <mu2>1.0</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>200 200</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.5 0.5 0.5 1</ambient>
+            <diffuse>0.6 0.6 0.6 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 당신의 지형 메쉬: 패키지 루트 기준 경로 사용 -->
+    <model name="test_route">
+      <static>true</static>
+      <pose>-15 -1 0 0 0 1.57</pose>
+      <link name="hill_link">
+        <collision name="hill_collision">
+          <geometry>
+            <mesh>
+              <uri>../media/meshes/test_route.stl</uri>
+              <scale>0.001 0.001 0.001</scale>
+            </mesh>
+          </geometry>
+          <surface>
+            <friction>
+              <ode>
+                <mu>1.0</mu>
+                <mu2>1.0</mu2>
+              </ode>
+            </friction>
+          </surface>
+        </collision>
+
+        <visual name="hill_visual">
+          <geometry>
+            <mesh>
+              <uri>../media/meshes/test_route.stl</uri> <!-- mtl 의존성 없는 STL을 권장 -->
+              <scale>0.001 0.001 0.001</scale>
+            </mesh>
+          </geometry>
+          <material>
+            <ambient>0.6 0.6 0.6 1</ambient>
+            <diffuse>0.7 0.7 0.7 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
