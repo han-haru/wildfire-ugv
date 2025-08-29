@@ -34,7 +34,7 @@ class CmdVelRampToTracks(Node):
         self.declare_parameter('w_limit', 0.0)             # 0이면 무제한, >0이면 각속도 제한(rad/s)
 
         # 토픽 이름
-        self.declare_parameter('topic_in', '/cmd_vel') 
+        self.declare_parameter('topic_in', '/revised/cmd_vel') 
         self.declare_parameter('topic_out', '/wheel_test_controller/commands')
 
         # 파라미터 로드
@@ -59,6 +59,7 @@ class CmdVelRampToTracks(Node):
         if self.use_fb:
             self.sub_js = self.create_subscription(JointState, '/joint_states',
                                                    self.on_js, 20)
+        self.motor_pub = self.create_publisher(Twist, '/motor/cmd_vel', 10)
 
         # 내부 상태
         self.last_rx = self.get_clock().now()
@@ -139,6 +140,11 @@ class CmdVelRampToTracks(Node):
         out = Float64MultiArray()
         out.data = [wL, wL, wL, wR, wR, wR]
         self.pub.publish(out)
+        # --- 현재 모터의 선속도/각속도 퍼블리시 ---
+        twist_msg = Twist()
+        twist_msg.linear.x  = self.v_out   # [m/s]
+        twist_msg.angular.z = self.w_out   # [rad/s]
+        self.motor_pub.publish(twist_msg)
 
 def main():
     rclpy.init()

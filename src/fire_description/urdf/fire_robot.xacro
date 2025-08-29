@@ -1,18 +1,11 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://ros.org/wiki/xacro" name="fire_robot">
 
-<!--##############################################################-->
-<!--#################### XACRO 상수 ####################-->
+  <!-- XACRO constants -->
   <xacro:arg name="include_inertial" default="true"/>
-  <xacro:property name="mesh_dir"   value="$(find fire_description)/meshes"/>
+  <xacro:property name="mesh_dir" value="$(find fire_description)/meshes"/>
 
-<!--##############################################################-->
-<!--#################### Robot Links & Joints ####################-->
-<!--##############################################################-->
-
-<!--##############################################################-->
-<!-- Base footprint link -->
-  <!-- xacro 루트 링크에 inertial 있으면 경고 띄움. dummy용-->
+  <!-- Base footprint (dummy) -->
   <link name="base_footprint"/>
   <joint name="base_footprint_joint" type="fixed">
     <parent link="base_footprint"/>
@@ -20,8 +13,7 @@
     <origin xyz="0 0 0.3" rpy="0 0 0"/>
   </joint>
 
-<!--##############################################################-->
-  <!-- ========== base_link (루트) ========== -->
+  <!-- base_link -->
   <link name="base_link">
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -42,22 +34,24 @@
     </collision>
   </link>
 
-<!--##############################################################-->
-  <!-- ===== IMU frame ===== -->
+  <!-- IMU frame -->
   <link name="imu_link"/>
   <joint name="imu_joint" type="fixed">
     <parent link="base_link"/>
     <child link="imu_link"/>
-    <!-- 로봇 기준에서 IMU 위치/자세 조정 -->
     <origin xyz="-0.10 0.0 0.0" rpy="0 0 0"/>
   </joint>
 
-  <!-- ===== Gazebo Sim sensors on imu_link ===== -->
+  <!-- Gazebo Sim sensors (Fortress): use model-scoped topics to avoid collisions -->
   <gazebo reference="imu_link">
-    <!-- 6축 IMU(가속도+자이로) -->
+    <!-- IMU -->
     <sensor name="imu_sensor" type="imu">
-      <topic>/imu</topic>           <!-- GZ Transport topic -->
+      <topic>~/imu</topic>
       <update_rate>100</update_rate>
+      <plugin filename="libignition-gazebo-imu-system.so"
+                name="ignition::gazebo::systems::Imu"
+                />
+      <gz_frame_id>imu_link</gz_frame_id>
       <imu>
         <angular_velocity>
           <x><noise type="gaussian"><mean>0</mean><stddev>0.002</stddev></noise></x>
@@ -72,10 +66,14 @@
       </imu>
     </sensor>
 
-    <!-- 자력계(3축) -->
+    <!-- Magnetometer -->
     <sensor name="mag_sensor" type="magnetometer">
-      <topic>/mag</topic>           <!-- GZ Transport topic -->
+      <topic>~/mag</topic>
       <update_rate>50</update_rate>
+      <plugin filename="libignition-gazebo-magnetometer-system.so"
+                name="ignition::gazebo::systems::Magnetometer"
+                />
+      <gz_frame_id>imu_link</gz_frame_id>
       <magnetometer>
         <x><noise type="gaussian"><mean>0</mean><stddev>0.0005</stddev></noise></x>
         <y><noise type="gaussian"><mean>0</mean><stddev>0.0005</stddev></noise></y>
@@ -84,8 +82,7 @@
     </sensor>
   </gazebo>
 
-<!--##############################################################-->
-<!--####################camera view############################-->
+  <!-- camera follow (helper) -->
   <link name="cam_follow_link">
     <inertial>
       <mass value="0.0001"/>
@@ -93,39 +90,35 @@
     </inertial>
     <visual>
       <geometry>
-        <sphere radius="0.1"/>
+        <sphere radius="0.01"/>
       </geometry>
-      <material><color rgba="1 0 0 1"/></material>
+      <!-- URDF needs a material name attribute -->
+      <material name="cam_follow_red"><color rgba="1 0 0 1"/></material>
     </visual>
     <collision>
       <geometry>
-        <sphere radius="0.1"/>
+        <sphere radius="0.001"/>
       </geometry>
     </collision>
   </link>
-
-  <!-- joint: fixed → revolute(잠금) -->
   <joint name="cam_follow_joint" type="revolute">
     <parent link="base_link"/>
     <child link="cam_follow_link"/>
-    <origin xyz="0.05 0 0.3" rpy="0 0 3.1415926535"/>
+    <origin xyz="0.05 0 0.5" rpy="0 0 3.1415926535"/>
     <axis xyz="1 0 0"/>
     <limit lower="0.0" upper="0.0" effort="0.1" velocity="0.1"/>
     <dynamics damping="1.0"/>
   </joint>
 
-<!--##############################################################-->
-  <!-- ========== ARM ========== -->
+  <!-- ARM -->
   <joint name="arm_joint" type="revolute">
     <origin xyz="0.2765 0 0" rpy="0 0 0"/>
     <parent link="base_link"/>
     <child link="arm"/>
     <axis xyz="0 1 0"/>
-    <limit velocity="1.0" lower="-0.5" upper="0.5" effort="50" />
-    <!-- dynamic damping -->
+    <limit velocity="1.0" lower="-0.5" upper="0.5" effort="50"/>
     <dynamics damping="0.05" friction="0.2"/>
   </joint>
-
   <link name="arm">
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -146,8 +139,7 @@
     </collision>
   </link>
 
-<!--##############################################################-->
-  <!-- ========== BLADE ========== -->
+  <!-- BLADE -->
   <joint name="blade_joint" type="continuous">
     <origin xyz="0.240 0 0" rpy="0 0 0"/>
     <parent link="arm"/>
@@ -156,7 +148,6 @@
     <limit velocity="200.0" effort="5.0"/>
     <dynamics damping="0.01" friction="0.05"/>
   </joint>
-
   <link name="blade">
     <inertial>
       <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -177,9 +168,7 @@
     </collision>
   </link>
 
-  <!--##############################################################-->
-  <!-- ========== LEFT WHEELS (parent=base_link) ========== -->
-  <!-- ==================== left_wheel1 =================== -->
+  <!-- LEFT WHEELS -->
   <joint name="left_wheel_1_joint" type="continuous">
     <origin xyz="-0.2935 -0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="left_wheel1"/>
@@ -188,7 +177,7 @@
   </joint>
   <link name="left_wheel1">
     <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
+      <mass value="2.5"/><inertia ixx="0.0068" ixy="0" ixz="0" iyy="0.0068" iyz="0" izz="0.0125"/></inertial>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry><mesh filename="file://${mesh_dir}/left_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
@@ -198,15 +187,7 @@
       <geometry><mesh filename="file://${mesh_dir}/left_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
     </collision>
   </link>
-  <gazebo reference="left_wheel1">
-    <mu1>1.0</mu1>   <!-- 표면 마찰 계수 -->
-    <mu2>1.0</mu2>
-    <kp>1e5</kp>     <!-- 접촉 강성 -->
-    <kd>1.0</kd>     <!-- 접촉 감쇠 -->
-  </gazebo>
 
-<!--##############################################################-->
-<!-- ==================== left_wheel2 =================== -->
   <joint name="left_wheel_2_joint" type="continuous">
     <origin xyz="0.025 -0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="left_wheel2"/>
@@ -215,7 +196,7 @@
   </joint>
   <link name="left_wheel2">
     <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
+      <mass value="2.5"/><inertia ixx="0.0068" ixy="0" ixz="0" iyy="0.0068" iyz="0" izz="0.0125"/></inertial>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry><mesh filename="file://${mesh_dir}/left_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
@@ -225,15 +206,7 @@
       <geometry><mesh filename="file://${mesh_dir}/left_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
     </collision>
   </link>
-  <gazebo reference="left_wheel2">
-    <mu1>1.0</mu1>   <!-- 표면 마찰 계수 -->
-    <mu2>1.0</mu2>
-    <kp>1e5</kp>     <!-- 접촉 강성 -->
-    <kd>1.0</kd>     <!-- 접촉 감쇠 -->
-  </gazebo>
 
-<!--##############################################################-->
-<!-- ==================== left_wheel3 =================== -->
   <joint name="left_wheel_3_joint" type="continuous">
     <origin xyz="0.3455 -0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="left_wheel3"/>
@@ -242,7 +215,7 @@
   </joint>
   <link name="left_wheel3">
     <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
+      <mass value="2.5"/><inertia ixx="0.0068" ixy="0" ixz="0" iyy="0.0068" iyz="0" izz="0.0125"/></inertial>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry><mesh filename="file://${mesh_dir}/left_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
@@ -252,16 +225,8 @@
       <geometry><mesh filename="file://${mesh_dir}/left_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
     </collision>
   </link>
-  <gazebo reference="left_wheel3">
-    <mu1>1.0</mu1>   <!-- 표면 마찰 계수 -->
-    <mu2>1.0</mu2>
-    <kp>1e5</kp>     <!-- 접촉 강성 -->
-    <kd>1.0</kd>     <!-- 접촉 감쇠 -->
-  </gazebo>
 
-<!--##############################################################-->
-  <!-- ========== RIGHT WHEELS ========== -->
-  <!-- ========== right_wheel1 ========== -->
+  <!-- RIGHT WHEELS -->
   <joint name="right_wheel_1_joint" type="continuous">
     <origin xyz="-0.2935 0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="right_wheel1"/>
@@ -270,7 +235,7 @@
   </joint>
   <link name="right_wheel1">
     <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
+      <mass value="2.5"/><inertia ixx="0.0068" ixy="0" ixz="0" iyy="0.0068" iyz="0" izz="0.0125"/></inertial>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry><mesh filename="file://${mesh_dir}/right_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
@@ -280,15 +245,7 @@
       <geometry><mesh filename="file://${mesh_dir}/right_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
     </collision>
   </link>
-  <gazebo reference="right_wheel1">
-    <mu1>1.0</mu1>   <!-- 표면 마찰 계수 -->
-    <mu2>1.0</mu2>
-    <kp>1e5</kp>     <!-- 접촉 강성 -->
-    <kd>1.0</kd>     <!-- 접촉 감쇠 -->
-  </gazebo>
 
-<!--##############################################################-->
-<!-- ========== right_wheel2 ========== -->
   <joint name="right_wheel_2_joint" type="continuous">
     <origin xyz="0.025 0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="right_wheel2"/>
@@ -297,7 +254,7 @@
   </joint>
   <link name="right_wheel2">
     <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
+      <mass value="2.5"/><inertia ixx="0.0068" ixy="0" ixz="0" iyy="0.0068" iyz="0" izz="0.0125"/></inertial>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry><mesh filename="file://${mesh_dir}/right_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
@@ -307,15 +264,7 @@
       <geometry><mesh filename="file://${mesh_dir}/right_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
     </collision>
   </link>
-  <gazebo reference="right_wheel2">
-    <mu1>1.0</mu1>   <!-- 표면 마찰 계수 -->
-    <mu2>1.0</mu2>
-    <kp>1e5</kp>     <!-- 접촉 강성 -->
-    <kd>1.0</kd>     <!-- 접촉 감쇠 -->
-  </gazebo>
 
-<!--##############################################################-->
-<!-- ========== right_wheel3 ========== -->
   <joint name="right_wheel_3_joint" type="continuous">
     <origin xyz="0.3455 0.15743 0" rpy="0 0 0"/>
     <parent link="base_link"/><child link="right_wheel3"/>
@@ -324,7 +273,7 @@
   </joint>
   <link name="right_wheel3">
     <inertial><origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="2.5"/><inertia ixx="0.002" ixy="0" ixz="0" iyy="0.002" iyz="0" izz="0.002"/></inertial>
+      <mass value="2.5"/><inertia ixx="0.0068" ixy="0" ixz="0" iyy="0.0068" iyz="0" izz="0.0125"/></inertial>
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry><mesh filename="file://${mesh_dir}/right_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
@@ -334,29 +283,21 @@
       <geometry><mesh filename="file://${mesh_dir}/right_wheel.obj" scale="0.01 0.01 0.01"/></geometry>
     </collision>
   </link>
-  <gazebo reference="right_wheel3">
-    <mu1>1.0</mu1>   <!-- 표면 마찰 계수 -->
-    <mu2>1.0</mu2>
-    <kp>1e5</kp>     <!-- 접촉 강성 -->
-    <kd>1.0</kd>     <!-- 접촉 감쇠 -->
-  </gazebo>
 
-  <!-- ===== ros2_control: Gazebo Sim 하드웨어 플러그인 ===== -->
+  <!-- ros2_control (Gazebo Sim) -->
   <ros2_control name="RobotController" type="system">
     <hardware>
       <plugin>gz_ros2_control/GazeboSimSystem</plugin>
     </hardware>
 
-    <!-- Arm : position 명령-->
     <joint name="arm_joint">
       <command_interface name="position"/>
-      <param name="min">-0.524</param> 
+      <param name="min">-0.524</param>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
       <state_interface name="effort"/>
     </joint>
 
-    <!-- Blade : velocity 명령-->
     <joint name="blade_joint">
       <command_interface name="velocity"/>
       <state_interface name="position"/>
@@ -364,7 +305,12 @@
       <state_interface name="effort"/>
     </joint>
 
-    <!-- Wheels : velocity 명령--> 
+    <!-- cam_follow_joint 추가 -->
+    <joint name="cam_follow_joint">
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
     <joint name="left_wheel_1_joint"><command_interface name="velocity"/>
       <state_interface name="position"/><state_interface name="velocity"/></joint>
     <joint name="left_wheel_2_joint"><command_interface name="velocity"/>
@@ -380,16 +326,10 @@
       <state_interface name="position"/><state_interface name="velocity"/></joint>
   </ros2_control>
 
-  <!-- ===== Gazebo 플러그인: 컨트롤러 매니저 구동 ===== -->
-  <gazebo>
-    <plugin filename="libgz_ros2_control-system.so"
-            name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-      <parameters>$(find fire_bringup)/config/controller.yaml</parameters>
-      <!-- 필요 시 네임스페이스/리매핑도 추가 가능
-      <ros>
-        <namespace>fire</namespace>
-      </ros>
-      -->
-    </plugin>
+  <!-- ros2_control plugin (Gazebo Sim) --> 
+  <gazebo> 
+    <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin"> 
+      <parameters>$(find fire_bringup)/config/controller.yaml</parameters> 
+    </plugin> 
   </gazebo>
 </robot>

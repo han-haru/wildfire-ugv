@@ -1,8 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.7">
   <world name="test_world">
-
-    <!-- 중력 / 물리 설정(옵션) -->
     <gravity>0 0 -9.81</gravity>
     <atmosphere type="adiabatic"/>
     <scene>
@@ -10,7 +8,7 @@
       <background>0.7 0.7 0.8 1</background>
     </scene>
 
-    <!-- Sun: Fuel 모델 대신 직접 정의 -->
+    <!-- Sun -->
     <light name="sun" type="directional">
       <pose>0 0 100 0 0 0</pose>
       <cast_shadows>true</cast_shadows>
@@ -25,7 +23,7 @@
       </attenuation>
     </light>
 
-    <!-- Ground plane: Fuel 모델 대신 로컬 평면 -->
+    <!-- Local ground plane -->
     <model name="ground_plane_local">
       <static>true</static>
       <link name="link">
@@ -60,10 +58,10 @@
       </link>
     </model>
 
-    <!-- 당신의 지형 메쉬: 패키지 루트 기준 경로 사용 -->
+    <!-- Your terrain mesh -->
     <model name="test_route">
       <static>true</static>
-      <pose>-15 -1 0 0 0 1.57</pose>
+      <pose>-5 -1 0 0 0 1.57</pose>
       <link name="hill_link">
         <collision name="hill_collision">
           <geometry>
@@ -81,11 +79,10 @@
             </friction>
           </surface>
         </collision>
-
         <visual name="hill_visual">
           <geometry>
             <mesh>
-              <uri>../media/meshes/test_route.stl</uri> <!-- mtl 의존성 없는 STL을 권장 -->
+              <uri>../media/meshes/test_route.stl</uri>
               <scale>0.001 0.001 0.001</scale>
             </mesh>
           </geometry>
